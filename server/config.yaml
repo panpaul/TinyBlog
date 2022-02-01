@@ -1,0 +1,22 @@
+WebServer:
+  Address: 0.0.0.0
+  Port: 8080
+
+Jwt:
+  JwtSecret: 'secret'
+  JwtExpireHour: 12
+
+Redis:
+  Db: 0
+  Address: '127.0.0.1:6379'
+  Password: ''
+
+Database:
+  Address: '127.0.0.1'
+  Port: 5432
+  User: 'dev-user'
+  Password: 'password'
+  Database: 'dev-db'
+  Prefix: 'tb_'
+
+Development: true

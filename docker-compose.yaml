@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  server:
+    build:
+      context: ./server
+    container_name: server
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    volumes:
+      - server_data:/app/resource/data
+    depends_on:
+      - postgres
+      - redis
+    links:
+      - postgres
+      - redis
+    networks:
+      - backend
+      - database
+
+  postgres:
+    image: postgres:alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: 'dev-user'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRES_DB: 'dev-db'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - database
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379' # debug only
+    networks:
+      - database
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - '8081:8080'
+    networks:
+      - backend
+      - database
+
+networks:
+  frontend:
+  backend:
+  database:
+
+volumes:
+  server_data:
+  pgdata:
