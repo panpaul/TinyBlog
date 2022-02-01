@@ -18,6 +18,7 @@ const (
 	DBCreateError               = 401
 	RedisIncrError              = 402
 	RedisGetError               = 403
+	DbUpdateError               = 404
 	UserDuplicated              = 501
 	UserNotFound                = 502
 	UserPasswordError           = 503
@@ -39,6 +40,7 @@ var msgText = map[Err]string{
 	DBCreateError:           "数据创建失败",
 	RedisIncrError:          "Redis自增失败",
 	RedisGetError:           "Redis获取失败",
+	DbUpdateError:           "数据更新失败",
 	UserDuplicated:          "用户已存在",
 	UserNotFound:            "用户不存在",
 	UserPasswordError:       "用户密码错误",
