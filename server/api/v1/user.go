@@ -11,7 +11,7 @@ import (
 )
 
 type UserForm struct {
-	Username string `json:"username"`
+	UserName string `json:"username"`
 	Password string `json:"password"`
 	NickName string `json:"nickname"`
 }
@@ -19,7 +19,7 @@ type UserForm struct {
 func Login(c *gin.Context) {
 	var l UserForm
 	_ = c.ShouldBindJSON(&l)
-	u := &model.User{Username: l.Username, Password: []byte(l.Password)}
+	u := &model.User{UserName: l.UserName, Password: []byte(l.Password)}
 	if user, err := service.UserApp.Login(u); err != e.Success {
 		global.Pong(err, nil, c)
 	} else {
@@ -31,9 +31,9 @@ func Register(c *gin.Context) {
 	var r UserForm
 	_ = c.ShouldBindJSON(&r)
 	u := &model.User{
-		Username: r.Username,
+		UserName: r.UserName,
 		Password: []byte(r.Password),
-		NickName: utils.If(r.NickName == "", r.Username, r.NickName).(string),
+		NickName: utils.If(r.NickName == "", r.UserName, r.NickName).(string),
 		Role:     model.RoleUser,
 	}
 	if user, err := service.UserApp.Register(u); err != e.Success {
@@ -85,7 +85,7 @@ func Profile(c *gin.Context) {
 func tokenNext(c *gin.Context, user *model.User) {
 	claim := model.Claims{
 		UUID:     user.UUID,
-		Username: user.Username,
+		UserName: user.UserName,
 		NickName: user.NickName,
 		Role:     user.Role,
 	}

@@ -54,5 +54,6 @@ func SetupDatabase() {
 func MigrateDatabase() {
 	global.LOG.Info("Migrating database...")
 
-	_ = global.DB.AutoMigrate(User{})
+	_ = global.DB.AutoMigrate(&User{})
+	_ = global.DB.AutoMigrate(&Article{})
 }

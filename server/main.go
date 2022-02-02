@@ -49,6 +49,17 @@ func main() {
 					return install(c.String("config"))
 				},
 			},
+			{
+				Name:    "dev",
+				Aliases: []string{"d"},
+				Usage:   "development debug",
+				Action: func(c *cli.Context) error {
+					global.Setup(c.String("config"))
+					model.SetupDatabase()
+					service.JwtApp.Setup()
+					return devDebug()
+				},
+			},
 		},
 	}
 

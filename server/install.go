@@ -114,7 +114,7 @@ func askDb() {
 		{
 			Name: "User",
 			Prompt: &survey.Input{
-				Message: "Database Server Username:",
+				Message: "Database Server UserName:",
 				Default: global.CONF.Database.User,
 			},
 			Validate: survey.Required,

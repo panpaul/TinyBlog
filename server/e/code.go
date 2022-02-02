@@ -7,6 +7,7 @@ const (
 	InternalError               = 100
 	InvalidParameter            = 101
 	Unauthenticated             = 102
+	NotFound                    = 103
 	CasbinAddPolicyError        = 201
 	CasbinRemovePolicyError     = 202
 	InsufficientPermission      = 203
@@ -16,9 +17,10 @@ const (
 	TokenSignError              = 304
 	TokenRevoked                = 305
 	DBCreateError               = 401
-	RedisIncrError              = 402
-	RedisGetError               = 403
-	DbUpdateError               = 404
+	DBUpdateError               = 402
+	DBQueryError                = 403
+	RedisIncrError              = 404
+	RedisGetError               = 405
 	UserDuplicated              = 501
 	UserNotFound                = 502
 	UserPasswordError           = 503
@@ -29,6 +31,7 @@ var msgText = map[Err]string{
 	InternalError:           "内部错误",
 	InvalidParameter:        "参数错误",
 	Unauthenticated:         "未登录",
+	NotFound:                "未找到",
 	CasbinAddPolicyError:    "添加权限失败",
 	CasbinRemovePolicyError: "删除权限失败",
 	InsufficientPermission:  "权限不足",
@@ -38,9 +41,10 @@ var msgText = map[Err]string{
 	TokenSignError:          "令牌签名错误",
 	TokenRevoked:            "令牌已失效",
 	DBCreateError:           "数据创建失败",
+	DBUpdateError:           "数据更新失败",
+	DBQueryError:            "数据查询失败",
 	RedisIncrError:          "Redis自增失败",
 	RedisGetError:           "Redis获取失败",
-	DbUpdateError:           "数据更新失败",
 	UserDuplicated:          "用户已存在",
 	UserNotFound:            "用户不存在",
 	UserPasswordError:       "用户密码错误",

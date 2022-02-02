@@ -25,6 +25,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/gofrs/uuid v4.0.0+incompatible
+	github.com/lib/pq v1.10.2
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 )
 

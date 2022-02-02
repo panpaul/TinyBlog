@@ -21,7 +21,7 @@ var UserApp = new(UserService)
 func (u *UserService) Register(user *model.User) (*model.User, e.Err) {
 	var buf model.User
 	if !errors.Is(
-		global.DB.Where("username = ?", user.Username).First(&buf).Error,
+		global.DB.Where("user_name = ?", user.UserName).First(&buf).Error,
 		gorm.ErrRecordNotFound,
 	) {
 		return &model.User{}, e.UserDuplicated
@@ -44,7 +44,7 @@ func (u *UserService) Login(user *model.User) (*model.User, e.Err) {
 	plainPassword := user.Password
 
 	if errors.Is(
-		global.DB.Where("username = ?", user.Username).First(&user).Error,
+		global.DB.Where("user_name = ?", user.UserName).First(&user).Error,
 		gorm.ErrRecordNotFound,
 	) {
 		return &model.User{}, e.UserNotFound
@@ -68,7 +68,7 @@ func (u *UserService) Update(user *model.User) (*model.User, e.Err) {
 	}
 
 	if err := global.DB.Model(&user).Where("uuid = ?", user.UUID).Updates(&user).Error; err != nil {
-		return &model.User{}, e.DbUpdateError
+		return &model.User{}, e.DBUpdateError
 	}
 
 	// Get Back to Sign Token

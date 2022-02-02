@@ -14,7 +14,7 @@ func testApi(c *gin.RouterGroup) {
 	c.GET("/token", func(c *gin.Context) {
 		claim := model.Claims{
 			UUID:     uuid.UUID{},
-			Username: "dev",
+			UserName: "dev",
 			NickName: "nick",
 			Role:     model.RoleAdmin,
 		}
