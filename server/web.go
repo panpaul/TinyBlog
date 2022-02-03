@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"go.uber.org/zap"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"server/global"
 	"server/router"
 	"syscall"
+	"time"
 )
 
 func startWebServer() error {
@@ -22,20 +24,23 @@ func startWebServer() error {
 	}
 
 	go func() {
-		err := server.ListenAndServe()
-		if err != nil {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			global.LOG.Fatal("ListenAndServe Failed", zap.Error(err))
 		}
 	}()
 
 	// Handle SIGINT and SIGTERM.
-	ch := make(chan os.Signal)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	<-ch
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	global.LOG.Info("Shutting down Server ...")
 
-	err := server.Shutdown(nil)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := server.Shutdown(ctx)
 	if err != nil {
-		global.LOG.Warn("Shutdown Failed", zap.Error(err))
+		global.LOG.Fatal("Server Shutdown Failed", zap.Error(err))
 	}
 
 	return err

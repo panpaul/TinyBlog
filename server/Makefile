@@ -27,4 +27,4 @@ dep:
 	go install github.com/swaggo/swag/cmd/swag@latest
 
 swagger:
-	swag init -g router/v1/v1.go -o router/v1/docs
+	swag init -g router/v1.go -o router/docs

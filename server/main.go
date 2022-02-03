@@ -37,6 +37,7 @@ func main() {
 					global.Setup(c.String("config"))
 					model.SetupDatabase()
 					service.JwtApp.Setup()
+					service.ArticleApp.Setup()
 					return startWebServer()
 				},
 			},
@@ -57,6 +58,7 @@ func main() {
 					global.Setup(c.String("config"))
 					model.SetupDatabase()
 					service.JwtApp.Setup()
+					service.ArticleApp.Setup()
 					return devDebug()
 				},
 			},

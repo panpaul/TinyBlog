@@ -2,19 +2,37 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gofrs/uuid"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"server/e"
 	"server/global"
 	"server/model"
+	"sync"
 )
 
-type ArticleService struct{}
-
-const PageLimit = 20
+type ArticleService struct {
+	tableName string
+	pageLimit int
+	once      sync.Once
+}
 
 var ArticleApp = new(ArticleService)
+
+func (a *ArticleService) Setup() {
+	a.once.Do(func() {
+		a.pageLimit = 20
+		stmt := &gorm.Statement{DB: global.DB}
+		err := stmt.Parse(&model.Article{})
+		if err != nil {
+			global.LOG.Panic("Failed to get Article table name", zap.Error(err))
+			return
+		}
+		a.tableName = stmt.Schema.Table
+	})
+}
 
 func (a *ArticleService) GetArticle(uuid uuid.UUID) (*model.Article, e.Err) {
 	article := &model.Article{}
@@ -32,10 +50,10 @@ func (a *ArticleService) GetArticle(uuid uuid.UUID) (*model.Article, e.Err) {
 	return article, e.Success
 }
 
-func (a *ArticleService) GetArticleList(author string, tag string, page int) ([]*model.Article, e.Err) {
-	var articles []*model.Article
+func (a *ArticleService) GetArticleList(author string, tag string, page int) ([]uuid.UUID, e.Err) {
+	var articles []uuid.UUID
 
-	qry := global.DB.Debug().
+	qry := global.DB.
 		Model(&model.Article{}).
 		Joins("Author")
 	if author != "" {
@@ -45,15 +63,15 @@ func (a *ArticleService) GetArticleList(author string, tag string, page int) ([]
 		qry = qry.Where("? = ANY(\"tags\")", tag)
 	}
 	qry = qry.
-		Limit(PageLimit).
-		Offset(PageLimit * page).
-		Order("created_at desc")
+		Limit(a.pageLimit).
+		Offset(a.pageLimit * page).
+		Order(fmt.Sprintf("\"%s\".\"created_at\" desc", a.tableName))
 
 	if errors.Is(
-		qry.Find(&articles).Error,
+		qry.Pluck(fmt.Sprintf("\"%s\".\"uuid\"", a.tableName), &articles).Error,
 		gorm.ErrRecordNotFound,
 	) {
-		return []*model.Article{}, e.NotFound
+		return []uuid.UUID{}, e.NotFound
 	}
 
 	return articles, e.Success
@@ -70,7 +88,7 @@ func (a *ArticleService) CreateArticle(article *model.Article) (*model.Article, 
 func (a *ArticleService) GetArticlePages(author string, tag string) (int64, e.Err) {
 	var count int64
 
-	qry := global.DB.Debug().
+	qry := global.DB.
 		Model(&model.Article{}).
 		Joins("Author")
 	if author != "" {
@@ -85,8 +103,8 @@ func (a *ArticleService) GetArticlePages(author string, tag string) (int64, e.Er
 		return 0, e.DBQueryError
 	}
 
-	cnt := count / PageLimit
-	if count%PageLimit != 0 {
+	cnt := count / int64(a.pageLimit)
+	if count%int64(a.pageLimit) != 0 {
 		cnt++
 	}
 

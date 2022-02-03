@@ -10,13 +10,16 @@ import (
 )
 
 // InitV1 godoc
-// @title TinyBlog API v1
-// @version 1.0.0
-// @description A Fresh New Blog System Written in Golang
-// @contact.name Paul
-// @contact.url https://blog.ofortune.xyz
-// @contact.email panyuxuan@hotmail.com
-// @BasePath /api/v1
+// @title                      TinyBlog API v1
+// @version                    1.0.0
+// @description                A Fresh New Blog System Written in Golang
+// @contact.name               Paul
+// @contact.url                https://blog.ofortune.xyz
+// @contact.email              panyuxuan@hotmail.com
+// @BasePath                   /api/v1
+// @securityDefinitions.apikey ApiKeyAuth
+// @in                         header
+// @name                       token
 func InitV1(v1g *gin.RouterGroup) {
 	v1g.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -41,7 +44,8 @@ func SetupRouterV1() {
 
 func EndpointsV1() []model.EndpointInfo {
 	return []model.EndpointInfo{
-		{"/test", testApi, testSetup},
-		{"/user", v1.UserApi, v1.UserSetup},
+		{Path: "/test", Register: testApi, Setup: testSetup},
+		{Path: "/user", Register: v1.UserApi, Setup: v1.UserSetup},
+		{Path: "/article", Register: v1.ArticleApi, Setup: v1.ArticleSetup},
 	}
 }

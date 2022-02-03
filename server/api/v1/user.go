@@ -16,6 +16,14 @@ type UserForm struct {
 	NickName string `json:"nickname"`
 }
 
+// Login godoc
+// @Summary     user login
+// @Description accept username and password(plaintext) and return token
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       login body v1.UserForm true "username and password"
+// @Router      /user/login [post]
 func Login(c *gin.Context) {
 	var l UserForm
 	_ = c.ShouldBindJSON(&l)
@@ -27,6 +35,14 @@ func Login(c *gin.Context) {
 	}
 }
 
+// Register godoc
+// @Summary     user register
+// @Description accept username and password(plaintext) and nickname(optionally) and return token
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       register body v1.UserForm true "username, nickname and password"
+// @Router      /user/register [post]
 func Register(c *gin.Context) {
 	var r UserForm
 	_ = c.ShouldBindJSON(&r)
@@ -43,6 +59,13 @@ func Register(c *gin.Context) {
 	}
 }
 
+// Logout godoc
+// @Summary     user logout
+// @Description logout the user which described by the token
+// @Tags        User
+// @Produce     json
+// @Router      /user/logout [post]
+// @Security    ApiKeyAuth
 func Logout(c *gin.Context) {
 	claim, exist := c.Get("claim")
 	if !exist {
@@ -58,6 +81,15 @@ func Logout(c *gin.Context) {
 	global.Pong(e.Success, nil, c)
 }
 
+// Profile godoc
+// @Summary     user profile update
+// @Description update nickname and(or) password
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       profile body v1.UserForm true "nickname and password"
+// @Router      /user/profile [post]
+// @Security    ApiKeyAuth
 func Profile(c *gin.Context) {
 	claim, exist := c.Get("claim")
 	if !exist {
@@ -101,5 +133,5 @@ func UserApi(c *gin.RouterGroup) {
 }
 
 func UserSetup(base string) {
-
+	global.LOG.Debug("api v1 /user setup")
 }
