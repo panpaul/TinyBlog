@@ -8,6 +8,7 @@ import (
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
 	"server/global"
+	_ "server/router/docs"
 	"server/utils"
 	"time"
 )
@@ -32,15 +33,21 @@ func InitRouters() *gin.Engine {
 		AllowCredentials: true,
 	}))
 
-	// add prof
 	if global.CONF.Development {
+		// add prof
 		pprof.Register(r)
+		// add swagger document
+		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
+	// static files
+	r.Static("/static", "./resource/frontend/static")
+	r.StaticFile("/", "./resource/frontend/index.html")
+	r.StaticFile("/robots.txt", "./resource/frontend/robots.txt")
+
+	// api v1
 	apiV1 := r.Group("/api/v1")
 	InitV1(apiV1)
-
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r
 }

@@ -3,20 +3,20 @@ WebServer:
   Port: 8080
 
 Jwt:
-  JwtSecret: 'secret'
+  JwtSecret: '${SERVER_JWT_SECRET}'
   JwtExpireHour: 12
 
 Redis:
   Db: 0
-  Address: 'redis:6379'
-  Password: ''
+  Address: '${SERVER_REDIS_ADDRESS}'
+  Password: '${SERVER_REDIS_PASSWORD}'
 
 Database:
-  Address: 'postgres'
+  Address: '${SERVER_DB_ADDRESS}'
   Port: 5432
-  User: 'dev-user'
-  Password: 'password'
-  Database: 'dev-db'
+  User: '${SERVER_DB_USER}'
+  Password: '${SERVER_DB_PASSWORD}'
+  Database: '${SERVER_DB_NAME}'
   Prefix: 'tb_'
 
-Development: true
+Development: false

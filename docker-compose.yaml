@@ -1,33 +1,37 @@
-version: "3"
+version: "2.4"
 
 services:
   server:
     build:
-      context: ./server
-    container_name: server
+      context: .
     restart: unless-stopped
     ports:
       - '8080:8080'
     volumes:
       - server_data:/app/resource/data
     depends_on:
-      - postgres
-      - redis
-    links:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SERVER_DB_PASSWORD: '0f359740bd1cda99'
+      SERVER_DB_NAME: 'tinyblog'
     networks:
-      - backend
+      - server
       - database
 
   postgres:
     image: postgres:alpine
-    container_name: postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: 'dev-user'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRES_DB: 'dev-db'
+      POSTGRES_PASSWORD: '0f359740bd1cda99'
+      POSTGRES_DB: 'tinyblog'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -35,10 +39,14 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: redis
     restart: unless-stopped
-    ports:
-      - '6379:6379' # debug only
+    #    ports:
+    #      - '6379:6379' # debug only
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - database
 
@@ -47,13 +55,13 @@ services:
     restart: always
     ports:
       - '8081:8080'
+    depends_on:
+      - postgres
     networks:
-      - backend
       - database
 
 networks:
-  frontend:
-  backend:
+  server:
   database:
 
 volumes:

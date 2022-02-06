@@ -1,0 +1,4 @@
+/frontend/build
+/frontend/node_modules
+/server/resource/data
+/server/resource/frontend

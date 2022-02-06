@@ -42,12 +42,23 @@ func main() {
 				},
 			},
 			{
-				Name:    "install",
-				Aliases: []string{"i"},
-				Usage:   "Setup database on first run",
+				Name:    "setup",
+				Aliases: []string{"s"},
+				Usage:   "Setup wizard",
 				Action: func(c *cli.Context) error {
 					global.Setup(c.String("config"))
 					return install(c.String("config"))
+				},
+			},
+			{
+				Name:    "migrate",
+				Aliases: []string{"m"},
+				Usage:   "Migrate database",
+				Action: func(c *cli.Context) error {
+					global.Setup(c.String("config"))
+					model.SetupDatabase()
+					model.MigrateDatabase()
+					return nil
 				},
 			},
 			{

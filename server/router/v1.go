@@ -5,7 +5,6 @@ import (
 	v1 "server/api/v1"
 	"server/global"
 	"server/model"
-	_ "server/router/docs"
 	"server/service"
 )
 
