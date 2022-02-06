@@ -1,0 +1,21 @@
+.blog-post {
+    margin-bottom: 3.5rem;
+}
+
+.blog-post-title {
+    margin-bottom: 0.25rem;
+    font-size: 2.5rem;
+}
+
+.blog-post-meta {
+    margin-bottom: 1.25rem;
+    color: #727272;
+}
+
+.blog-pagination {
+    margin-bottom: 2.5rem;
+}
+
+.blog-pagination > .btn {
+    border-radius: 2rem;
+}

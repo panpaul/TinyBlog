@@ -23,7 +23,7 @@ var ArticleApp = new(ArticleService)
 
 func (a *ArticleService) Setup() {
 	a.once.Do(func() {
-		a.pageLimit = 20
+		a.pageLimit = 10
 		stmt := &gorm.Statement{DB: global.DB}
 		err := stmt.Parse(&model.Article{})
 		if err != nil {
@@ -50,8 +50,8 @@ func (a *ArticleService) GetArticle(uuid uuid.UUID) (*model.Article, e.Err) {
 	return article, e.Success
 }
 
-func (a *ArticleService) GetArticleList(author string, tag string, page int) ([]uuid.UUID, e.Err) {
-	var articles []uuid.UUID
+func (a *ArticleService) GetArticleList(author string, tag string, page int) ([]*model.ArticleDescription, e.Err) {
+	var articles []*model.ArticleDescription
 
 	qry := global.DB.
 		Model(&model.Article{}).
@@ -63,15 +63,21 @@ func (a *ArticleService) GetArticleList(author string, tag string, page int) ([]
 		qry = qry.Where("? = ANY(\"tags\")", tag)
 	}
 	qry = qry.
+		Select([]string{
+			fmt.Sprintf("\"%s\".\"uuid\"", a.tableName),
+			fmt.Sprintf("\"%s\".\"created_at\"", a.tableName),
+			fmt.Sprintf("\"%s\".\"title\"", a.tableName),
+			fmt.Sprintf("\"%s\".\"description\"", a.tableName),
+		}).
 		Limit(a.pageLimit).
 		Offset(a.pageLimit * page).
 		Order(fmt.Sprintf("\"%s\".\"created_at\" desc", a.tableName))
 
 	if errors.Is(
-		qry.Pluck(fmt.Sprintf("\"%s\".\"uuid\"", a.tableName), &articles).Error,
+		qry.Scan(&articles).Error,
 		gorm.ErrRecordNotFound,
 	) {
-		return []uuid.UUID{}, e.NotFound
+		return []*model.ArticleDescription{}, e.NotFound
 	}
 
 	return articles, e.Success

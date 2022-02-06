@@ -11,18 +11,21 @@ type ArticleForm struct {
 	Author string `json:"author"`
 	Page   int    `json:"page"`
 	Tag    string `json:"tag"`
+	UUID   string `json:"uuid"`
 }
 
 // GetArticle godoc
 // @Summary     get article by uuid
 // @Description get details of an article by uuid
 // @Tags        Article
-// @Accept      x-www-form-urlencoded
+// @Accept      json
 // @Produce     json
-// @Param       uuid path string true "article uuid"
-// @Router      /article/content/{uuid} [get]
+// @Param       article body v1.ArticleForm true "article uuid"
+// @Router      /article/content [post]
 func GetArticle(c *gin.Context) {
-	id, _ := uuid.FromString(c.Param("uuid"))
+	var a ArticleForm
+	_ = c.ShouldBindJSON(&a)
+	id, _ := uuid.FromString(a.UUID)
 	article, err := service.ArticleApp.GetArticle(id)
 	global.Pong(err, article, c)
 }
@@ -58,7 +61,7 @@ func GetArticlePage(c *gin.Context) {
 }
 
 func ArticleApi(c *gin.RouterGroup) {
-	c.GET("/content/:uuid", GetArticle)
+	c.POST("/content", GetArticle)
 	c.POST("/list", GetArticleList)
 	c.POST("/page", GetArticlePage)
 }
