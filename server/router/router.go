@@ -40,14 +40,16 @@ func InitRouters() *gin.Engine {
 		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	// static files
-	r.Static("/static", "./resource/frontend/static")
-	r.StaticFile("/", "./resource/frontend/index.html")
-	r.StaticFile("/robots.txt", "./resource/frontend/robots.txt")
-
 	// api v1
 	apiV1 := r.Group("/api/v1")
 	InitV1(apiV1)
 
+	// static files
+	r.Static("/static", "./resource/frontend/static")
+	r.StaticFile("/", "./resource/frontend/index.html")
+	r.StaticFile("/robots.txt", "./resource/frontend/robots.txt")
+	r.NoRoute(func(c *gin.Context) {
+		c.File("./resource/frontend/index.html")
+	})
 	return r
 }
