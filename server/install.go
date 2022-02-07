@@ -3,43 +3,78 @@ package main
 import (
 	"fmt"
 	"github.com/AlecAivazis/survey/v2"
+	"os"
 	"server/global"
 	"server/model"
 	"server/router"
+	"server/service"
 	"server/utils"
 	"strconv"
 )
 
-func install(configPath string) error {
+func install(configPath string, noAsk bool) error {
 	global.LOG.Info("Your config file is located at: " + configPath)
 
-	askWeb()
-	askRedis()
-	askDb()
+	if !noAsk {
+		reconfigure()
+	}
+
 	global.CONF.Jwt.JwtSecret = utils.RandomString(32)
 	global.CONF.Jwt.JwtExpireHour = 12
 	global.CONF.Development = false
 
-	fmt.Printf("%+v\n", global.CONF)
-
-	ans := false
-	prompt := &survey.Confirm{
-		Message: "Are these config correct?",
-	}
-	_ = survey.AskOne(prompt, &ans)
-
-	if !ans {
-		global.LOG.Warn("Bye")
-		return nil
-	}
-
 	global.CONF.WriteConfig("./config.yaml")
 
 	model.SetupDatabase()
-	model.MigrateDatabase()
 	router.SetupRouterV1()
 
+	askAdmin(noAsk)
+
 	return nil
+}
+
+func askAdmin(noAsk bool) {
+	admin := model.User{
+		UserName: "admin",
+		Password: []byte(utils.RandomString(16)),
+		NickName: "Paul",
+		Role:     model.RoleAdmin,
+	}
+
+	adminQs := []*survey.Question{
+		{
+			Name: "UserName",
+			Prompt: &survey.Input{
+				Message: "Admin username:",
+				Default: admin.UserName,
+			},
+			Validate: survey.Required,
+		},
+		{
+			Name: "NickName",
+			Prompt: &survey.Input{
+				Message: "Admin nickname:",
+				Default: admin.NickName,
+			},
+			Validate: survey.Required,
+		},
+		{
+			Name: "Password",
+			Prompt: &survey.Password{
+				Message: "Admin password:",
+			},
+			Validate: survey.Required,
+		},
+	}
+
+	if !noAsk {
+		_ = survey.Ask(adminQs, &admin)
+	} else {
+		fmt.Printf("Username: %s\n", admin.UserName)
+		fmt.Printf("Password: %s\n", string(admin.Password))
+	}
+
+	service.UserApp.Register(&admin)
 }
 
 func askWeb() {
@@ -145,4 +180,23 @@ func askDb() {
 		},
 	}
 	_ = survey.Ask(dbConfigQs, &global.CONF.Database)
+}
+
+func reconfigure() {
+	askWeb()
+	askRedis()
+	askDb()
+
+	fmt.Printf("%+v\n", global.CONF)
+
+	ans := false
+	prompt := &survey.Confirm{
+		Message: "Are these config correct?",
+	}
+	_ = survey.AskOne(prompt, &ans)
+
+	if !ans {
+		global.LOG.Info("Bye")
+		os.Exit(0)
+	}
 }

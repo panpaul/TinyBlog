@@ -49,7 +49,7 @@ rm -f /tmp/tmp.yaml
 
 if [ ! -f /app/inited ]; then
   echo "Running install"
-  /app/server migrate
+  /app/server setup --yes
   touch /app/inited
 fi
 

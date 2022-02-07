@@ -3,7 +3,7 @@ PROJECT=server
 GO := go
 
 LDFLAGS += -X "main.Version=$(shell cat VERSION)"
-LDFLAGS += -X "main.BuildTimeStamp=$(shell date -u '+%Y-%m-%d %I:%M:%S')"
+LDFLAGS += -X "main.BuildTime=$(shell date -u '+%F %I:%M:%S %Z')"
 
 GOBUILD   := $(GO) build -o $(PROJECT) -ldflags '$(LDFLAGS)'
 

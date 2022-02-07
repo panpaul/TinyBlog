@@ -9,11 +9,16 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 	"moul.io/zapgorm2"
+	"os"
 	"server/global"
+	"time"
 )
 
 func SetupDatabase() {
 	global.LOG.Info("Connecting to database...")
+
+	logger := zapgorm2.New(global.LOG)
+	logger.IgnoreRecordNotFoundError = true
 
 	var err error
 	global.DB, err = gorm.Open(
@@ -29,12 +34,16 @@ func SetupDatabase() {
 				TablePrefix: global.CONF.Database.Prefix,
 			},
 			PrepareStmt: true,
-			Logger:      zapgorm2.New(global.LOG),
+			Logger:      logger,
 		})
+
 	if err != nil {
 		global.LOG.Error("Could not connect to database", zap.Error(err))
 		return
 	}
+
+	checkAlive(3)
+	migrateDatabase()
 
 	global.LOG.Info("Connecting to redis...")
 
@@ -51,9 +60,34 @@ func SetupDatabase() {
 	global.LOG.Info("redis connect success", zap.String("pong", pong))
 }
 
-func MigrateDatabase() {
-	global.LOG.Info("Migrating database...")
+func migrateDatabase() {
+	global.LOG.Info("Auto Migrating database...")
 
 	_ = global.DB.AutoMigrate(&User{})
 	_ = global.DB.AutoMigrate(&Article{})
+}
+
+func checkAlive(retry int) {
+	if retry <= 0 {
+		global.LOG.Fatal("All retries are used up. Failed to connect to database")
+		os.Exit(-1)
+	}
+
+	db, err := global.DB.DB()
+	if err != nil {
+		global.LOG.Warn("failed to get sql.DB instance", zap.Error(err))
+		time.Sleep(5 * time.Second)
+		checkAlive(retry - 1)
+		return
+	}
+
+	err = db.Ping()
+	if err != nil {
+		global.LOG.Warn("failed to ping database", zap.Error(err))
+		time.Sleep(5 * time.Second)
+		checkAlive(retry - 1)
+		return
+	}
+
+	global.LOG.Info("database connect established")
 }

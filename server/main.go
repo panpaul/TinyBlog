@@ -7,12 +7,15 @@ import (
 	"server/global"
 	"server/model"
 	"server/service"
+	"time"
 )
 
 func main() {
 	app := &cli.App{
-		Name:    "TinyBlog",
-		Version: getVersion(),
+		Name:                 "TinyBlog",
+		Compiled:             getBuildTime(),
+		Version:              Version,
+		EnableBashCompletion: true,
 		Authors: []*cli.Author{
 			{
 				Name:  "Paul",
@@ -45,32 +48,17 @@ func main() {
 				Name:    "setup",
 				Aliases: []string{"s"},
 				Usage:   "Setup wizard",
-				Action: func(c *cli.Context) error {
-					global.Setup(c.String("config"))
-					return install(c.String("config"))
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:    "yes",
+						Aliases: []string{"y"},
+						Usage:   "using default or generated value",
+						Value:   false,
+					},
 				},
-			},
-			{
-				Name:    "migrate",
-				Aliases: []string{"m"},
-				Usage:   "Migrate database",
 				Action: func(c *cli.Context) error {
 					global.Setup(c.String("config"))
-					model.SetupDatabase()
-					model.MigrateDatabase()
-					return nil
-				},
-			},
-			{
-				Name:    "dev",
-				Aliases: []string{"d"},
-				Usage:   "development debug",
-				Action: func(c *cli.Context) error {
-					global.Setup(c.String("config"))
-					model.SetupDatabase()
-					service.JwtApp.Setup()
-					service.ArticleApp.Setup()
-					return devDebug()
+					return install(c.String("config"), c.Bool("yes"))
 				},
 			},
 		},
@@ -83,10 +71,15 @@ func main() {
 }
 
 var (
-	BuildTimeStamp = "None"
-	Version        = "1.0.0"
+	BuildTime = "2022-02-01 10:23:00 UTC"
+	Version   = "1.0.0"
 )
 
-func getVersion() string {
-	return Version + "+" + BuildTimeStamp
+func getBuildTime() time.Time {
+	build, err := time.Parse("2006-01-02 03:04:05 MST", BuildTime)
+	if err != nil {
+		log.Printf("failed to parse build time: %v", err)
+		build = time.Now()
+	}
+	return build
 }
