@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
 
 import Badge from "react-bootstrap/Badge";
+import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 
 import ReactMarkdown from "react-markdown";
@@ -15,6 +16,7 @@ import rehypeRaw from "rehype-raw";
 import emoji from "remark-emoji";
 
 import { ArticleResp, getArticle } from "../service/api";
+import { useAuth } from "../service/auth";
 import ErrorPage from "./error";
 
 import "katex/dist/katex.min.css";
@@ -22,6 +24,7 @@ import "./blog.css";
 
 function ContentPage() {
     const uuid = useParams().articleId;
+    const auth = useAuth();
     const [errorMsg, setErrorMsg] = useState<string>();
     const [detail, setDetail] = useState<ArticleResp>({
         CreatedAt: Date(),
@@ -56,6 +59,11 @@ function ContentPage() {
     const page = (
         <article className="blog-post">
             <h2 className="blog-post-title">{detail.title}</h2>
+            {auth.isLogin && (
+                <LinkContainer to={`/edit/${uuid}`}>
+                    <Button variant="primary">Edit</Button>
+                </LinkContainer>
+            )}
             <p className="blog-post-meta">
                 {new Date(detail.CreatedAt).toDateString()}
                 {" | "}

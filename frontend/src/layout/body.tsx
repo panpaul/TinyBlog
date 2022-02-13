@@ -9,7 +9,10 @@ import Container from "react-bootstrap/Container";
 import ContentPage from "../page/content";
 import ArticleList from "../page/list";
 import ErrorPage from "../page/error";
+import LoginPage from "../page/login";
+import LogoutPage from "../page/logout";
 
+import { RequireAuth } from "../service/auth";
 import "./layout.css";
 
 function Body() {
@@ -21,8 +24,17 @@ function Body() {
             <Row>
                 <Col md={8}>
                     <Routes>
-                        <Route path="/admin" element={<Admin />} />
+                        <Route
+                            path="/edit/:articleId"
+                            element={
+                                <RequireAuth>
+                                    <Admin />
+                                </RequireAuth>
+                            }
+                        />
                         <Route path="/search" element={<Search />} />
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/logout" element={<LogoutPage />} />
                         <Route
                             path="/article/:articleId"
                             element={<ContentPage />}

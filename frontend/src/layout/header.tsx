@@ -8,10 +8,13 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 
 import { BsSearch } from "react-icons/bs";
+import { useAuth } from "../service/auth";
 
 import "./layout.css";
 
 function Header() {
+    const auth = useAuth();
+
     return (
         <Container className="blog-header py-3">
             {/* Header */}
@@ -32,9 +35,9 @@ function Header() {
                             <BsSearch className="mx-3" />
                         </a>
                     </LinkContainer>
-                    <LinkContainer to="/admin">
+                    <LinkContainer to={auth.isLogin ? "/logout" : "/login"}>
                         <Button variant="outline-secondary" size="sm">
-                            Admin
+                            {auth.isLogin ? "Logout" : "Login"}
                         </Button>
                     </LinkContainer>
                 </Col>

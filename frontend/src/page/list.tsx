@@ -29,14 +29,18 @@ function ArticleList() {
             .then((res) => setDescList(res || []))
             .catch((err) => {
                 console.error("[list] getArticleList", err);
-                setErrorMsg((msg) => `${msg} | ${err}`);
+                setErrorMsg((msg) =>
+                    msg == undefined ? err : `${msg} | ${err}`
+                );
             });
         // get pages
         getArticlePages({ author: author, tag: tag })
             .then((res) => setTotalPages(res))
             .catch((err) => {
                 console.error("[list] getArticlePages", err);
-                setErrorMsg((msg) => `${msg} | ${err}`);
+                setErrorMsg((msg) =>
+                    msg == undefined ? err : `${msg} | ${err}`
+                );
             });
     }, [author, tag, currentPage]);
 
