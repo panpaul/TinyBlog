@@ -24,7 +24,7 @@ run: clean dep swagger build
 
 dep:
 	go get
-	go install github.com/swaggo/swag/cmd/swag@latest
 
 swagger:
+	go install github.com/swaggo/swag/cmd/swag@latest
 	swag init -g router/v1.go -o router/docs
