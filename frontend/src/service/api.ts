@@ -66,6 +66,13 @@ async function getArticle(data: ArticleReq): Promise<ArticleResp> {
     return sendReq<ArticleReq, ArticleResp>("/article/content", "", data);
 }
 
+async function modifyArticle(
+    token: string,
+    data: ArticleResp
+): Promise<string> {
+    return sendReq<ArticleResp, string>("/article/modify", token, data);
+}
+
 async function userLogin(data: UserReq): Promise<string> {
     return sendReq<UserReq, string>("/user/login", "", data);
 }
@@ -74,6 +81,6 @@ async function userLogout(token: string): Promise<void> {
     return sendReq<void, void>("/user/logout", token);
 }
 
-export { getArticleList, getArticlePages, getArticle };
+export { getArticleList, getArticlePages, getArticle, modifyArticle };
 export { userLogin, userLogout };
 export type { ArticleListResp, ArticleResp };

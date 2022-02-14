@@ -39,7 +39,7 @@ var msgText = map[Err]string{
 	TokenMalformed:          "令牌格式错误",
 	TokenTimeError:          "令牌有效期错误",
 	TokenSignError:          "令牌签名错误",
-	TokenRevoked:            "令牌已失效",
+	TokenRevoked:            "令牌已失效，请重新登录",
 	DBCreateError:           "数据创建失败",
 	DBUpdateError:           "数据更新失败",
 	DBQueryError:            "数据查询失败",

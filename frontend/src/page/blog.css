@@ -19,3 +19,9 @@
 .blog-pagination > .btn {
     border-radius: 2rem;
 }
+
+.blog-editor-toast {
+    bottom: 1rem;
+    right: 1rem;
+    position: fixed;
+}
