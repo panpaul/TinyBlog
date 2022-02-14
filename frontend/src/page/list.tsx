@@ -96,8 +96,10 @@ function ArticleList() {
 
     return (
         <>
-            {errorMsg || descList.length === 0 ? (
+            {errorMsg ? (
                 <ErrorPage msg={errorMsg} />
+            ) : descList.length === 0 ? (
+                <h2>Nothing found</h2>
             ) : (
                 page
             )}
