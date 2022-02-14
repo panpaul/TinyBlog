@@ -11,7 +11,7 @@ GOBUILD   := $(GO) build -o $(PROJECT) -ldflags '$(LDFLAGS)'
 
 default: all
 
-all: clean dep swagger build
+all: clean swagger dep build
 
 build:
 	$(GOBUILD)
