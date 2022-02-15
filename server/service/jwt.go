@@ -2,7 +2,7 @@ package service
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	"go.uber.org/zap"
 	"server/e"
 	"server/global"
@@ -61,8 +61,9 @@ func (j *JwtService) ParseToken(tokenText string) (*model.Claims, e.Err) {
 
 func (j *JwtService) SignClaim(claim model.Claims) (string, e.Err) {
 	now := time.Now()
-	claim.IssuedAt = now.Unix()
-	claim.ExpiresAt = now.Add(time.Duration(global.CONF.Jwt.JwtExpireHour) * time.Hour).Unix()
+	claim.IssuedAt = jwt.NewNumericDate(now)
+	claim.NotBefore = jwt.NewNumericDate(now)
+	claim.ExpiresAt = jwt.NewNumericDate(now.Add(time.Duration(global.CONF.Jwt.JwtExpireHour) * time.Hour))
 	claim.Version = UserApp.NextVersion(claim.UUID)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claim)

@@ -22,9 +22,9 @@ require (
 	github.com/AlecAivazis/survey/v2 v2.3.2
 	github.com/casbin/casbin/v2 v2.41.0
 	github.com/casbin/gorm-adapter/v3 v3.4.6
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/gofrs/uuid v4.2.0+incompatible
+	github.com/golang-jwt/jwt/v4 v4.3.0
 	github.com/lib/pq v1.10.4
 	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838
 )
@@ -71,7 +71,6 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/ugorji/go/codec v1.2.6 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
