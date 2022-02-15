@@ -15,6 +15,7 @@ type Article struct {
 	Title       string         `json:"title"       gorm:"not null"`
 	Description string         `json:"description" gorm:""`
 	Content     string         `json:"content"     gorm:"not null"`
+	EnableMath  bool           `json:"enable_math" gorm:"not null;default:false"`
 	Level       Role           `json:"-"           gorm:"default:0"`
 	Tags        pq.StringArray `json:"tags"        gorm:"type:text[]"`
 }

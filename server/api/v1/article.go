@@ -22,6 +22,7 @@ type ModifyArticleForm struct {
 	Title       string   `json:"title"`
 	Description string   `json:"description"`
 	Content     string   `json:"content"`
+	EnableMath  bool     `json:"enable_math"`
 	Tags        []string `json:"tags"`
 }
 
@@ -98,6 +99,7 @@ func ModifyArticle(c *gin.Context) {
 		Title:       a.Title,
 		Description: a.Description,
 		Content:     a.Content,
+		EnableMath:  a.EnableMath,
 		Level:       0,
 		Tags:        a.Tags,
 	}

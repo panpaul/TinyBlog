@@ -36,6 +36,7 @@ type ArticleResp = {
     title: string;
     content: string;
     description: string;
+    enable_math: boolean;
     tags: string[];
 };
 

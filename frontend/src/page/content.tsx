@@ -11,12 +11,12 @@ import Table from "react-bootstrap/Table";
 import Toast from "react-bootstrap/Toast";
 
 import ReactMarkdown from "react-markdown";
+import { PluggableList } from "react-markdown/lib/react-markdown";
 import remarkGfm from "remark-gfm";
-import { Prism } from "react-syntax-highlighter";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import emoji from "remark-emoji";
+import { PrismAsync } from "react-syntax-highlighter";
+import { materialLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
@@ -38,12 +38,13 @@ function ContentPage() {
     const [detail, setDetail] = useState<ArticleResp>({
         CreatedAt: Date(),
         UpdatedAt: Date(),
-        author: { nick_name: "loading", user_name: "loading" },
-        content: "# Loading",
-        description: "loading",
-        tags: ["loading"],
-        title: "loading...",
         uuid: "00000000-0000-0000-0000-000000000000",
+        author: { nick_name: "loading", user_name: "loading" },
+        title: "loading...",
+        description: "loading",
+        content: "# Loading",
+        enable_math: false,
+        tags: ["loading"],
     });
 
     useEffect(() => {
@@ -55,17 +56,7 @@ function ContentPage() {
             });
     }, [uuid]);
 
-    const tags = detail.tags.map((item) => (
-        <LinkContainer
-            to={`/?tag=${item}`}
-            key={item}
-            style={{ marginRight: "0.5rem" }}
-        >
-            <Badge bg="info">{item}</Badge>
-        </LinkContainer>
-    ));
-
-    const editorCol = (
+    const EditorCol = (
         <>
             <h4>Title: </h4>
             <input
@@ -96,6 +87,21 @@ function ContentPage() {
                     }))
                 }
             />
+            <hr />
+            <h4>Enable Math Render: </h4>
+            <div className="form-check form-switch">
+                <input
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={detail.enable_math}
+                    onChange={(e) =>
+                        setDetail((d) => ({
+                            ...d,
+                            enable_math: e.target.checked,
+                        }))
+                    }
+                />
+            </div>
             <hr />
             <h4>Content: </h4>
             <CodeMirror
@@ -133,7 +139,39 @@ function ContentPage() {
         </>
     );
 
-    const articleCol = (
+    const tags = detail.tags.map((item) => (
+        <LinkContainer
+            to={`/?tag=${item}`}
+            key={item}
+            style={{ marginRight: "0.5rem" }}
+        >
+            <Badge bg="info">{item}</Badge>
+        </LinkContainer>
+    ));
+
+    const [remark, setRemark] = useState<PluggableList | undefined>([
+        remarkGfm,
+        emoji,
+    ]);
+    const [rehype, setRehype] = useState<PluggableList | undefined>([
+        rehypeRaw,
+    ]);
+
+    useEffect(() => {
+        if (detail.enable_math) {
+            import("remark-math").then((r) => {
+                setRemark([remarkGfm, emoji, r.default]);
+            });
+            import("rehype-katex").then((r) => {
+                setRehype([rehypeRaw, r.default]);
+            });
+        } else {
+            setRemark([remarkGfm, emoji]);
+            setRehype([rehypeRaw]);
+        }
+    }, [detail.enable_math]);
+
+    const ArticleCol = (
         <article className="blog-post">
             <h2 className="blog-post-title">{detail.title}</h2>
             {auth.isLogin && (
@@ -154,16 +192,24 @@ function ContentPage() {
             <p>{detail.description}</p>
             <hr />
             <ReactMarkdown
-                remarkPlugins={[remarkGfm, remarkMath, emoji]}
-                rehypePlugins={[rehypeKatex, rehypeRaw]}
+                remarkPlugins={remark}
+                rehypePlugins={rehype}
                 components={{
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     code: ({ node, inline, className, children, ...props }) => {
                         const match = /language-(\w+)/.exec(className || "");
                         return !inline && match ? (
-                            <Prism language={match[1]} PreTag="div" {...props}>
+                            <PrismAsync
+                                language={match[1]}
+                                wrapLines={true}
+                                showLineNumbers={true}
+                                wrapLongLines={true}
+                                style={materialLight}
+                                PreTag="div"
+                                {...props}
+                            >
                                 {String(children).replace(/\n$/, "")}
-                            </Prism>
+                            </PrismAsync>
                         ) : (
                             <code className={className} {...props}>
                                 {children}
@@ -186,8 +232,8 @@ function ContentPage() {
     const renderedPage = (
         <>
             <Row>
-                <Col>{articleCol}</Col>
-                {showEditor && <Col>{editorCol}</Col>}
+                <Col>{ArticleCol}</Col>
+                {showEditor && <Col>{EditorCol}</Col>}
             </Row>
             <div className="blog-editor-toast">
                 <Toast

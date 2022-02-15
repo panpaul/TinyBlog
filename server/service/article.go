@@ -118,7 +118,9 @@ func (a *ArticleService) GetArticlePages(author string, tag string) (int64, e.Er
 }
 
 func (a *ArticleService) UpdateArticle(article *model.Article) (*model.Article, e.Err) {
-	if err := global.DB.Model(article).Updates(article).Error; err != nil {
+	if err := global.DB.Model(article).
+		Select("Title", "Description", "Content", "EnableMath", "Tags").
+		Updates(article).Error; err != nil {
 		return &model.Article{}, e.DBUpdateError
 	}
 
