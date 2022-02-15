@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gofrs/uuid"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type Claims struct {
@@ -11,5 +11,5 @@ type Claims struct {
 	NickName string    `json:"nick_name"`
 	Role     Role      `json:"role"`
 	Version  int64     `json:"version"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
